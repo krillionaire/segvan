@@ -24,6 +24,16 @@ using namespace libbitcoin::chain;
 using namespace libbitcoin::machine;
 using namespace libbitcoin::wallet;
 
+const uint8_t mainnet_p2kh = 0x00;
+const uint8_t mainnet_p2sh = 0x05;
+const uint8_t mainnet_wif = 0x80;
+const uint16_t ec_mainnet = (mainnet_wif<<8)|(mainnet_p2kh);
+
+const uint8_t testnet_p2kh = 0x6f;
+const uint8_t testnet_p2sh = 0xc4;
+const uint8_t testnet_wif = 0xef;
+const uint16_t ec_testnet = (testnet_wif<<8)|(testnet_p2kh);
+
 std::regex mainnet_p2sh_pattern("^3[a-km-zA-HJ-NP-Z1-9]{1,34}$");
 std::regex testnet_p2sh_pattern("^2[a-km-zA-HJ-NP-Z1-9]{1,34}$");
 
@@ -69,7 +79,7 @@ std::string p2sh_address (const ec_secret& secret, bool testnet)
     if (secret_to_public(pubkey, secret)) {
         return payment_address(
             script(witness_program(pubkey)),
-            (testnet ? payment_address::testnet_p2sh : payment_address::mainnet_p2sh)
+            (testnet ? testnet_p2sh : mainnet_p2sh)
         ).encoded();
     }
     return "";
@@ -110,7 +120,7 @@ void vanity_thread (int tid)
                     std::cout << " (testnet)";
                 }
                 std::cout << std::endl;
-                ec_private privkey(secret, 0x8000, true);
+                ec_private privkey(secret, ec_mainnet, true);
                 std::cout << "Private key: " << privkey.encoded() << std::endl;
                 exit(EXIT_SUCCESS);
             }
@@ -161,7 +171,7 @@ int main (int argc, char** argv)
         testnet = true;
     }
     else {
-        std::cerr << "Invalid address patern " << pattern << std::endl;
+        std::cerr << "Invalid address pattern " << pattern << std::endl;
         usage();
         abort();
     }
