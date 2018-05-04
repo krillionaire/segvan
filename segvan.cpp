@@ -120,7 +120,7 @@ void vanity_thread (int tid)
                     std::cout << " (testnet)";
                 }
                 std::cout << std::endl;
-                ec_private privkey(secret, ec_mainnet, true);
+                ec_private privkey(secret, testnet ? ec_testnet : ec_mainnet, true);
                 std::cout << "Private key: " << privkey.encoded() << std::endl;
                 exit(EXIT_SUCCESS);
             }
